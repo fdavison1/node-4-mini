@@ -16,11 +16,23 @@ app.use(session({
         maxAge: 1000 * 60 * 60
     }
 }))
+app.use((req, res, next) => {
+    let badWords = ['knucklehead', 'jerk', 'internet explorer']
+    if (req.body.message){
+        for (let i = 0; i < badWords.length; i++){
+            let regex = new RegExp(badWords[i], 'g')
+            req.body.message = req.body.message.replace(regex, '****')
+        }
+        next()
+    } else {
+        next()
+    }
+})
 
 //endpoints
 app.get('/api/messages', ctrl.getAllMessages)
 app.post('/api/messages', ctrl.createMessage)
-app.get('/api/message', ctrl.history)
+app.get('/api/messages/history', ctrl.history)
 
 //listening
 app.listen(SERVER_PORT, console.log(`testing, testing, port ${SERVER_PORT}`))
